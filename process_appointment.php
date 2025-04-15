@@ -38,11 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         
         $current_count = $result['count'] ?? 0;
-        $max_slots = $result['max_slots'] ?? 50;
+        $max_slots = $result['max_slots'] ?? 100;
         $mechanic_name = $result['name'] ?? 'Unknown';
 
         if ($current_count >= $max_slots) {
-            echo "<script>alert('Mechanic $mechanic_name is fully booked for $appointment_date ($current_count/$max_slots slots). Choose another mechanic or date.'); window.location='appointment.php';</script>";
+            echo "<script>alert('Mechanic $mechanic_name is fully booked for $appointment_date ($current_count/$max_slots slots used). Please select another mechanic or date.'); window.location='appointment.php';</script>";
             exit;
         }
 

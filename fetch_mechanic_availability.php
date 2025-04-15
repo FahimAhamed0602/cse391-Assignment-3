@@ -9,7 +9,6 @@ try {
     $initial = isset($_GET['initial']);
 
     if ($initial) {
-        // Return all mechanics for initial dropdown
         $stmt = $conn->query("SELECT id, name, max_slots FROM mechanics");
         $mechanics = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $available = array_map(function($m) {
@@ -43,7 +42,7 @@ try {
         if ($remaining_slots > 0) {
             $available[] = [
                 'id' => $mechanic['id'],
-                'name' => $mechanic['name'],
+                'name' => $m['name'],
                 'slots' => $remaining_slots
             ];
         }
