@@ -6,18 +6,33 @@ include 'config.php';
 
 try {
     $date = $_GET['date'] ?? '';
+    $initial = isset($_GET['initial']);
+
+    if ($initial) {
+        // Return all mechanics for initial dropdown
+        $stmt = $conn->query("SELECT id, name, max_slots FROM mechanics");
+        $mechanics = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $available = array_map(function($m) {
+            return [
+                'id' => $m['id'],
+                'name' => $m['name'],
+                'slots' => $m['max_slots']
+            ];
+        }, $mechanics);
+        echo json_encode(['error' => null, 'available' => $available]);
+        exit;
+    }
+
     if (empty($date)) {
         echo json_encode(['error' => 'No date provided', 'available' => []]);
         exit;
     }
 
-    // Get all mechanics
     $stmt = $conn->query("SELECT id, name, max_slots FROM mechanics");
     $mechanics = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $available = [];
     foreach ($mechanics as $mechanic) {
-        // Count appointments for this mechanic on the date
         $stmt = $conn->prepare("SELECT COUNT(*) as count 
                               FROM appointments 
                               WHERE mechanic_id = ? AND appointment_date = ?");

@@ -7,7 +7,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_mechanic = $_POST['new_mechanic'];
 
     try {
-        // Check mechanic availability for new date
         $stmt = $conn->prepare("SELECT COUNT(*) as count, m.max_slots 
                               FROM appointments a 
                               JOIN mechanics m ON a.mechanic_id = m.id 
@@ -20,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Update appointment
         $stmt = $conn->prepare("UPDATE appointments 
                               SET appointment_date = ?, mechanic_id = ? 
                               WHERE id = ?");
@@ -28,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         echo "<script>alert('Appointment updated successfully!'); window.location='admin.php';</script>";
     } catch(PDOException $e) {
-        echo "<script>alert('Error: " . $e->getMessage() . "'); window.location='admin.php';</script>";
+        echo "<script>alert('Error: " . htmlspecialchars($e->getMessage()) . "'); window.location='admin.php';</script>";
     }
 }
 ?>

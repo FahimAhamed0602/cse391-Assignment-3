@@ -7,7 +7,7 @@ USE car_workshop;
 CREATE TABLE mechanics (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
-    max_slots INT DEFAULT 10 -- Increased for testing
+    max_slots INT DEFAULT 50 -- Increased to minimize booking errors
 );
 
 -- Create appointments table
@@ -25,8 +25,8 @@ CREATE TABLE appointments (
 
 -- Insert initial mechanics
 INSERT INTO mechanics (name, max_slots) VALUES
-('John Smith', 10),
-('Mike Johnson', 10),
-('Sarah Williams', 10),
-('David Brown', 10),
-('Emma Davis', 10);
+('John Smith', 50),
+('Mike Johnson', 50),
+('Sarah Williams', 50),
+('David Brown', 50),
+('Emma Davis', 50);

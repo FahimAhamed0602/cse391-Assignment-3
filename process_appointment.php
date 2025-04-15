@@ -1,6 +1,5 @@
 <?php
 // process_appointment.php
-// Enable error reporting for debugging
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -16,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $appointment_date = trim($_POST['appointment_date'] ?? '');
     $mechanic_id = trim($_POST['mechanic'] ?? '');
 
-    // Basic validation
     if (empty($client_name) || empty($address) || empty($phone) || empty($car_license) || empty($car_engine) || empty($appointment_date) || empty($mechanic_id)) {
         echo "<script>alert('All fields are required!'); window.location='appointment.php';</script>";
         exit;
@@ -40,11 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         
         $current_count = $result['count'] ?? 0;
-        $max_slots = $result['max_slots'] ?? 4;
+        $max_slots = $result['max_slots'] ?? 50;
         $mechanic_name = $result['name'] ?? 'Unknown';
 
         if ($current_count >= $max_slots) {
-            echo "<script>alert('Mechanic $mechanic_name is fully booked for this date ($current_count/$max_slots slots used). Please choose another mechanic or date.'); window.location='appointment.php';</script>";
+            echo "<script>alert('Mechanic $mechanic_name is fully booked for $appointment_date ($current_count/$max_slots slots). Choose another mechanic or date.'); window.location='appointment.php';</script>";
             exit;
         }
 
@@ -54,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $success = $stmt->execute([$client_name, $address, $phone, $car_license, $car_engine, $appointment_date, $mechanic_id]);
 
         if ($success) {
-            // Verify insertion
             $stmt = $conn->prepare("SELECT id FROM appointments WHERE phone = ? AND appointment_date = ? AND mechanic_id = ?");
             $stmt->execute([$phone, $appointment_date, $mechanic_id]);
             $new_appointment = $stmt->fetch(PDO::FETCH_ASSOC);

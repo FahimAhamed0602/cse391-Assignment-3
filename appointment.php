@@ -90,13 +90,6 @@
             <label for="mechanic">Select Mechanic:</label>
             <select id="mechanic" name="mechanic" required>
                 <option value="">Select a mechanic</option>
-                <?php
-                include 'config.php';
-                $stmt = $conn->query("SELECT id, name FROM mechanics");
-                while ($row = $stmt->fetch()) {
-                    echo "<option value='{$row['id']}'>{$row['name']}</option>";
-                }
-                ?>
             </select>
             <div id="mechanic-availability">Select a date to see available mechanics.</div>
         </div>
@@ -105,7 +98,30 @@
     </form>
 
     <script>
-        // Client-side form validation
+        let allMechanics = [];
+        
+        // Fetch all mechanics initially
+        fetch('fetch_mechanic_availability.php?initial=1')
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    allMechanics = data.available;
+                    updateMechanicDropdown(null);
+                }
+            });
+
+        function updateMechanicDropdown(availableMechanics) {
+            const mechanicSelect = document.getElementById('mechanic');
+            mechanicSelect.innerHTML = '<option value="">Select a mechanic</option>';
+            const mechanicsToShow = availableMechanics || allMechanics;
+            mechanicsToShow.forEach(mech => {
+                const option = document.createElement('option');
+                option.value = mech.id;
+                option.textContent = `${mech.name} (${mech.slots} slots available)`;
+                mechanicSelect.appendChild(option);
+            });
+        }
+
         document.getElementById('appointmentForm').addEventListener('submit', function(e) {
             const phone = document.getElementById('phone').value;
             const carEngine = document.getElementById('car_engine').value;
@@ -128,7 +144,6 @@
             }
         });
 
-        // Fetch mechanic availability when date changes
         document.getElementById('appointment_date').addEventListener('change', function() {
             const date = this.value;
             if (!date) return;
@@ -139,16 +154,20 @@
                     const availabilityDiv = document.getElementById('mechanic-availability');
                     if (data.error) {
                         availabilityDiv.innerHTML = `<span class="error">${data.error}</span>`;
+                        updateMechanicDropdown(allMechanics);
                         return;
                     }
                     if (data.available.length === 0) {
                         availabilityDiv.innerHTML = '<span class="error">No mechanics available for this date.</span>';
+                        updateMechanicDropdown(allMechanics);
                     } else {
-                        availabilityDiv.innerHTML = 'Available mechanics: ' + data.available.map(m => `${m.name} (${m.slots} slots)`).join(', ');
+                        availabilityDiv.innerHTML = 'Available: ' + data.available.map(m => `${m.name} (${m.slots} slots)`).join(', ');
+                        updateMechanicDropdown(data.available);
                     }
                 })
                 .catch(error => {
                     document.getElementById('mechanic-availability').innerHTML = `<span class="error">Error checking availability: ${error.message}</span>`;
+                    updateMechanicDropdown(allMechanics);
                 });
         });
     </script>

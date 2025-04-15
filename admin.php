@@ -1,15 +1,11 @@
 <?php
-// admin.php
-// Enable error reporting for debugging
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Start session and include database connection
 session_start();
 include 'config.php';
 
-// Handle login attempt
 $login_error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['password'])) {
     if ($_POST['password'] === 'admin123') {
@@ -100,7 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['password'])) {
         <a href="logout.php">Logout</a>
 
         <script>
-            // Function to fetch appointments via AJAX
             function fetchAppointments() {
                 fetch('fetch_appointments.php')
                     .then(response => response.json())
@@ -147,10 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['password'])) {
                     });
             }
 
-            // Initial fetch
             fetchAppointments();
-
-            // Poll every 5 seconds for new appointments
             setInterval(fetchAppointments, 5000);
         </script>
     <?php endif; ?>
